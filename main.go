@@ -36,6 +36,11 @@ func main() {
 					Value: "",
 					Usage: "a datetime to specify date range",
 				},
+				cli.StringFlag{
+					Name:  "hadd",
+					Value: "",
+					Usage: "an hour to add start and end datetime, because of timezone",
+				},
 				cli.BoolFlag{
 					Name:  "verbose",
 					Usage: "a flag to log verbosely",
@@ -50,7 +55,7 @@ func main() {
 				query := c.Args()[0]
 				isVerbose = c.Bool("verbose")
 
-				output, err := action(query, c.Float64("hour"), c.String("start"), c.String("end"))
+				output, err := action(query, c.Float64("hour"), c.String("start"), c.String("end"), c.String("hadd"))
 				if err != nil {
 					fmt.Printf("Failed to run the command: %v\n", err)
 					return
@@ -62,12 +67,8 @@ func main() {
 	app.Run(os.Args)
 }
 
-func action(query string, hour float64, start string, end string) (output string, err error) {
-	if isVerbose {
-		fmt.Printf("query: %v, hour: %v, start: %v, end: %v\n", query, hour, start, end)
-	}
-
-	decorated, err := Decorate(query, hour, start, end)
+func action(query string, hour float64, start string, end string, hadd string) (output string, err error) {
+	decorated, err := Decorate(query, hour, start, end, hadd)
 	if err != nil {
 		return "", err
 	}
