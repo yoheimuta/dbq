@@ -23,8 +23,18 @@ func main() {
 			Flags: []cli.Flag{
 				cli.Float64Flag{
 					Name:  "hour",
-					Value: 0.5,
+					Value: 0,
 					Usage: "a decimal to decorate hour ago, relative to the current time",
+				},
+				cli.StringFlag{
+					Name:  "start",
+					Value: "",
+					Usage: "a datetime to specify date range",
+				},
+				cli.StringFlag{
+					Name:  "end",
+					Value: "",
+					Usage: "a datetime to specify date range",
 				},
 				cli.BoolFlag{
 					Name:  "verbose",
@@ -38,21 +48,13 @@ func main() {
 				}
 
 				query := c.Args()[0]
-
-				hour := c.Float64("hour")
 				isVerbose = c.Bool("verbose")
 
-				var output string
-				var err error
-				if 0 < hour {
-					output, err = action(query, hour)
-				}
-
+				output, err := action(query, c.Float64("hour"), c.String("start"), c.String("end"))
 				if err != nil {
 					fmt.Printf("Failed to run the command: %v\n", err)
 					return
 				}
-
 				fmt.Printf(output)
 			},
 		},
@@ -60,12 +62,12 @@ func main() {
 	app.Run(os.Args)
 }
 
-func action(query string, hour float64) (output string, err error) {
+func action(query string, hour float64, start string, end string) (output string, err error) {
 	if isVerbose {
-		fmt.Printf("query: %v, hour: %v\n", query, hour)
+		fmt.Printf("query: %v, hour: %v, start: %v, end: %v\n", query, hour, start, end)
 	}
 
-	decorated, err := Decorate(hour, query)
+	decorated, err := Decorate(query, hour, start, end)
 	if err != nil {
 		return "", err
 	}
