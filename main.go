@@ -8,6 +8,7 @@ import (
 )
 
 var isVerbose bool
+var isDryRun bool
 
 func main() {
 	app := cli.NewApp()
@@ -43,7 +44,11 @@ func main() {
 				},
 				cli.BoolFlag{
 					Name:  "verbose",
-					Usage: "a flag to log verbosely",
+					Usage: "a flag to output verbosely",
+				},
+				cli.BoolFlag{
+					Name:  "dryRun",
+					Usage: "a flag to run without any changes",
 				},
 			},
 			Action: func(c *cli.Context) {
@@ -54,6 +59,7 @@ func main() {
 
 				statement := c.Args()[0]
 				isVerbose = c.Bool("verbose")
+				isDryRun = c.Bool("dryRun")
 
 				output, err := query(statement, c.Float64("hour"), c.String("start"), c.String("end"), c.String("hadd"))
 				if err != nil {
@@ -68,11 +74,18 @@ func main() {
 }
 
 func query(statement string, hour float64, start string, end string, hadd string) (output string, err error) {
+	if isDryRun {
+		dStatement := GetRawStatement(statement)
+		fmt.Printf("Raw: %v\n", dStatement)
+		dOutput := Query("", "", dStatement)
+		fmt.Printf("%v\n", dOutput)
+	}
+
 	decorated, err := Decorate(statement, hour, start, end, hadd)
 	if err != nil {
 		return "", err
 	}
-	fmt.Printf("Running: %v\n", decorated)
+	fmt.Printf("Decorated: %v\n", decorated)
 
 	output = Query("", "", decorated)
 	return output, nil

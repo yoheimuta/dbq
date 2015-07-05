@@ -22,6 +22,13 @@ func Decorate(statement string, hour float64, start string, end string, hadd str
 	return decorated, err
 }
 
+func GetRawStatement(statement string) (raw string) {
+	// input:  tableName@
+	// output: tableName
+	raw = tableRule.ReplaceAllString(statement, "")
+	return raw
+}
+
 func withDateTime(statement string, start string, end string, hadd string) (decorated string, err error) {
 	startTime, err := time.Parse("2006-01-02 15:04:05", start)
 	if err != nil {
