@@ -7,28 +7,18 @@ import (
 
 var dryRunRule = regexp.MustCompile("--dry_run")
 
-func Query(gflags string, cflags string, statement string) string {
-	args := buildArgs(gflags, cflags, statement)
+func Query(statement string) string {
+	args := buildArgs(statement)
 	cmd := exec.Command("bq", args...)
 	output, _ := cmd.CombinedOutput()
 	return string(output)
 }
 
-func buildArgs(gflags, cflags string, statement string) (args []string) {
-	if gflags != "" {
-		args = append(args, gflags)
-	}
-
+func buildArgs(statement string) (args []string) {
 	args = append(args, "query")
 
 	if isDryRun {
-		if cflags == "" {
-			cflags = "--dry_run"
-		} else if !dryRunRule.MatchString(cflags) {
-			cflags += " --dry_run"
-		}
-	}
-	if cflags != "" {
+		cflags := "--dry_run"
 		args = append(args, cflags)
 	}
 
