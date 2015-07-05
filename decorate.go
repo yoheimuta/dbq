@@ -10,19 +10,19 @@ import (
 var tableRule = regexp.MustCompile("@")
 var haddRule = regexp.MustCompile("([+|-])(\\d)")
 
-func Decorate(query string, hour float64, start string, end string, hadd string) (decorated string, err error) {
+func Decorate(statement string, hour float64, start string, end string, hadd string) (decorated string, err error) {
 	if start != "" {
-		decorated, err = withDateTime(query, start, end, hadd)
+		decorated, err = withDateTime(statement, start, end, hadd)
 	} else {
 		if hour <= 0 {
 			hour = 0.5
 		}
-		decorated, err = withHour(query, hour)
+		decorated, err = withHour(statement, hour)
 	}
 	return decorated, err
 }
 
-func withDateTime(query string, start string, end string, hadd string) (decorated string, err error) {
+func withDateTime(statement string, start string, end string, hadd string) (decorated string, err error) {
 	startTime, err := time.Parse("2006-01-02 15:04:05", start)
 	if err != nil {
 		return "", err
@@ -45,10 +45,10 @@ func withDateTime(query string, start string, end string, hadd string) (decorate
 
 	// input:  tableName@
 	// output: tableName@1435997334864-1436001613000
-	decorated = tableRule.ReplaceAllString(query, replaced)
+	decorated = tableRule.ReplaceAllString(statement, replaced)
 
-	if query == decorated {
-		return "", fmt.Errorf("Failed to decorated table: input=%s", query)
+	if statement == decorated {
+		return "", fmt.Errorf("Failed to decorated table: input=%s", statement)
 	}
 	return decorated, nil
 }
@@ -79,15 +79,15 @@ func hourAdd(targetTime time.Time, hadd string) time.Time {
 	return targetTime.Add(time.Duration(diff) * time.Hour)
 }
 
-func withHour(query string, hour float64) (decorated string, err error) {
+func withHour(statement string, hour float64) (decorated string, err error) {
 	beforeMSec := int(hour * 60 * 60 * 1000)
 
 	// input:  tableName@
 	// output: tableName@-3600000-
-	decorated = tableRule.ReplaceAllString(query, fmt.Sprintf("@-%d-", beforeMSec))
+	decorated = tableRule.ReplaceAllString(statement, fmt.Sprintf("@-%d-", beforeMSec))
 
-	if query == decorated {
-		return "", fmt.Errorf("Failed to decorated table: input=%s", query)
+	if statement == decorated {
+		return "", fmt.Errorf("Failed to decorated table: input=%s", statement)
 	}
 	return decorated, nil
 }

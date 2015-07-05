@@ -4,7 +4,7 @@ import (
 	"os/exec"
 )
 
-func Query(gflags string, cflags string, query string) string {
+func Query(gflags string, cflags string, statement string) string {
 	var args []string
 	if gflags != "" {
 		args = append(args, gflags)
@@ -16,7 +16,7 @@ func Query(gflags string, cflags string, query string) string {
 		args = append(args, cflags)
 	}
 
-	args = append(args, query)
+	args = append(args, statement)
 
 	cmd := exec.Command("bq", args...)
 	output, _ := cmd.CombinedOutput()
