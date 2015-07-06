@@ -3,14 +3,12 @@ package main
 import (
 	"fmt"
 	"regexp"
-	"strconv"
 	"time"
 )
 
 var tableRule = regexp.MustCompile("@")
-var haddRule = regexp.MustCompile("([+|-])(\\d)")
 
-func Decorate(statement string, hour float64, start string, end string, hadd string) (decorated string, err error) {
+func Decorate(statement string, hour float64, start string, end string, hadd float64) (decorated string, err error) {
 	if start != "" {
 		decorated, err = withDateTime(statement, start, end, hadd)
 	} else {
@@ -29,12 +27,12 @@ func GetRawStatement(statement string) (raw string) {
 	return raw
 }
 
-func withDateTime(statement string, start string, end string, hadd string) (decorated string, err error) {
+func withDateTime(statement string, start string, end string, hadd float64) (decorated string, err error) {
 	startTime, err := time.Parse("2006-01-02 15:04:05", start)
 	if err != nil {
 		return "", err
 	}
-	startTime = hourAdd(startTime, hadd)
+	startTime = addHour(startTime, hadd)
 	startMSec := startTime.Unix() * 1000
 
 	var replaced string
@@ -45,7 +43,7 @@ func withDateTime(statement string, start string, end string, hadd string) (deco
 		if err != nil {
 			return "", err
 		}
-		endTime = hourAdd(endTime, hadd)
+		endTime = addHour(endTime, hadd)
 		endMSec := endTime.Unix() * 1000
 		replaced = fmt.Sprintf("@%d-%d", startMSec, endMSec)
 	}
@@ -60,30 +58,11 @@ func withDateTime(statement string, start string, end string, hadd string) (deco
 	return decorated, nil
 }
 
-func hourAdd(targetTime time.Time, hadd string) time.Time {
-	if hadd == "" {
+func addHour(targetTime time.Time, hadd float64) time.Time {
+	if hadd == 0 {
 		return targetTime
 	}
-	matches := haddRule.FindAllStringSubmatch(hadd, -1)
-
-	if len(matches) < 1 {
-		if isVerbose {
-			fmt.Printf("Skip to add hadd hour because no match: hadd=%v\n", hadd)
-		}
-		return targetTime
-	}
-	if len(matches[0]) < 3 {
-		if isVerbose {
-			fmt.Printf("Skip to add hadd hour because invalid format: hadd=%v\n", hadd)
-		}
-		return targetTime
-	}
-
-	diff, _ := strconv.Atoi(matches[0][2])
-	if matches[0][1] == "-" {
-		diff *= -1
-	}
-	return targetTime.Add(time.Duration(diff) * time.Hour)
+	return targetTime.Add(time.Duration(hadd*60) * time.Minute)
 }
 
 func withHour(statement string, hour float64) (decorated string, err error) {

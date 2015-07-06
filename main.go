@@ -38,10 +38,10 @@ func main() {
 					Value: "",
 					Usage: "a datetime to specify date range with start flag",
 				},
-				cli.StringFlag{
+				cli.Float64Flag{
 					Name:  "hadd",
-					Value: "",
-					Usage: "+hour or -hour to add to start and end datetime, considering timezone",
+					Value: 0,
+					Usage: "a decimal of hour or -hour to add to start and end datetime, considering timezone",
 				},
 				cli.StringFlag{
 					Name:  "gflags",
@@ -77,7 +77,7 @@ func main() {
 				isDryRun = c.Bool("dryRun")
 				onlyStatement = c.Bool("onlyStatement")
 
-				output, err := query(statement, c.Float64("hour"), c.String("start"), c.String("end"), c.String("hadd"))
+				output, err := query(statement, c.Float64("hour"), c.String("start"), c.String("end"), c.Float64("hadd"))
 				if err != nil {
 					fmt.Printf("Failed to run the command\n: error=%v\n", err)
 					return
@@ -91,7 +91,7 @@ func main() {
 	app.Run(os.Args)
 }
 
-func query(statement string, hour float64, start string, end string, hadd string) (output string, err error) {
+func query(statement string, hour float64, start string, end string, hadd float64) (output string, err error) {
 	if isDryRun {
 		dStatement := GetRawStatement(statement)
 		fmt.Printf("Raw: %v\n", dStatement)
