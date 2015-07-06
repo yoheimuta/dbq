@@ -8,9 +8,9 @@ import (
 
 var tableRule = regexp.MustCompile("@")
 
-func Decorate(statement string, hour float64, start string, end string, hadd float64) (decorated string, err error) {
+func Decorate(statement string, hour float64, start string, end string, hadd float64, buffer float64) (decorated string, err error) {
 	if start != "" {
-		decorated, err = withDateTime(statement, start, end, hadd)
+		decorated, err = withDateTime(statement, start, end, hadd, buffer)
 	} else {
 		if hour <= 0 {
 			hour = 0.5
@@ -27,12 +27,15 @@ func GetRawStatement(statement string) (raw string) {
 	return raw
 }
 
-func withDateTime(statement string, start string, end string, hadd float64) (decorated string, err error) {
+func withDateTime(statement string, start string, end string, hadd float64, buffer float64) (decorated string, err error) {
 	startTime, err := time.Parse("2006-01-02 15:04:05", start)
 	if err != nil {
 		return "", err
 	}
 	startTime = addHour(startTime, hadd)
+	if 0 < buffer {
+		startTime = addHour(startTime, buffer*-1)
+	}
 	startMSec := startTime.Unix() * 1000
 
 	var replaced string
@@ -44,6 +47,9 @@ func withDateTime(statement string, start string, end string, hadd float64) (dec
 			return "", err
 		}
 		endTime = addHour(endTime, hadd)
+		if 0 < buffer {
+			endTime = addHour(endTime, buffer)
+		}
 		endMSec := endTime.Unix() * 1000
 		replaced = fmt.Sprintf("@%d-%d", startMSec, endMSec)
 	}

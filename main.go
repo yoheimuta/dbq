@@ -43,15 +43,20 @@ func main() {
 					Value: 0,
 					Usage: "a decimal of hour or -hour to add to start and end datetime, considering timezone",
 				},
+				cli.Float64Flag{
+					Name:  "buffer",
+					Value: 1,
+					Usage: "a decimal of hour to add to start and end datetime, it's heuristic value",
+				},
 				cli.StringFlag{
 					Name:  "gflags",
 					Value: "",
-					Usage: "[TODO] a gflags. see `bq help query`",
+					Usage: "no support. Use onlyStatement instead",
 				},
 				cli.StringFlag{
 					Name:  "cflags",
 					Value: "",
-					Usage: "[TODO] a command flags. see `bq help query`",
+					Usage: "no support. Use onlyStatement instead",
 				},
 				cli.BoolFlag{
 					Name:  "verbose",
@@ -77,7 +82,7 @@ func main() {
 				isDryRun = c.Bool("dryRun")
 				onlyStatement = c.Bool("onlyStatement")
 
-				output, err := query(statement, c.Float64("hour"), c.String("start"), c.String("end"), c.Float64("hadd"))
+				output, err := query(statement, c.Float64("hour"), c.String("start"), c.String("end"), c.Float64("hadd"), c.Float64("buffer"))
 				if err != nil {
 					fmt.Printf("Failed to run the command\n: error=%v\n", err)
 					return
@@ -91,7 +96,7 @@ func main() {
 	app.Run(os.Args)
 }
 
-func query(statement string, hour float64, start string, end string, hadd float64) (output string, err error) {
+func query(statement string, hour float64, start string, end string, hadd float64, buffer float64) (output string, err error) {
 	if isDryRun {
 		dStatement := GetRawStatement(statement)
 		fmt.Printf("Raw: %v\n", dStatement)
@@ -99,7 +104,7 @@ func query(statement string, hour float64, start string, end string, hadd float6
 		fmt.Printf("%v\n", dOutput)
 	}
 
-	decorated, err := Decorate(statement, hour, start, end, hadd)
+	decorated, err := Decorate(statement, hour, start, end, hadd, buffer)
 	if err != nil {
 		return "", err
 	}
