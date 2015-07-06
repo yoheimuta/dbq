@@ -98,13 +98,15 @@ func main() {
 
 func query(statement string, hour float64, start string, end string, hadd float64, buffer float64) (output string, err error) {
 	if isDryRun {
-		dStatement := GetRawStatement(statement)
+		dApplied, _ := DateAdd(statement, hadd)
+		dStatement := GetRawStatement(dApplied)
 		fmt.Printf("Raw: %v\n", dStatement)
 		dOutput := Query(dStatement)
 		fmt.Printf("%v\n", dOutput)
 	}
 
-	decorated, err := Decorate(statement, hour, start, end, hadd, buffer)
+	applied, _ := DateAdd(statement, hadd)
+	decorated, err := Decorate(applied, hour, start, end, hadd, buffer)
 	if err != nil {
 		return "", err
 	}
