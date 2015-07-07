@@ -2,10 +2,7 @@ package main
 
 import (
 	"os/exec"
-	"regexp"
 )
-
-var dryRunRule = regexp.MustCompile("--dry_run")
 
 func Query(statement string) string {
 	args := buildArgs(statement)

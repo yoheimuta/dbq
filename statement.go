@@ -19,7 +19,7 @@ func DateAdd(statement string, hadd float64) (replaced string, err error) {
 	for _, match := range matches {
 		if len(match) < 2 {
 			if isVerbose {
-				fmt.Printf("Skip to replace ha because invalid format: statement=%v\n", statement)
+				fmt.Printf("Skip to replace _ha(): statement=%v\n", statement)
 			}
 			return statement, nil
 		}
