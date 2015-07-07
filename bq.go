@@ -4,14 +4,21 @@ import (
 	"os/exec"
 )
 
-func Query(statement string) string {
-	args := buildArgs(statement)
+type Bq struct{}
+
+func CreateBq() *Bq {
+	bq := &Bq{}
+	return bq
+}
+
+func (this *Bq) Query(statement string) string {
+	args := this.buildArgs(statement)
 	cmd := exec.Command("bq", args...)
 	output, _ := cmd.CombinedOutput()
 	return string(output)
 }
 
-func buildArgs(statement string) (args []string) {
+func (this *Bq) buildArgs(statement string) (args []string) {
 	args = append(args, "query")
 
 	if isDryRun {

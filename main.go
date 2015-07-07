@@ -11,6 +11,14 @@ var isVerbose bool
 var isDryRun bool
 var onlyStatement bool
 
+type Config struct {
+	hour      float64
+	startDate string
+	endDate   string
+	hadd      float64
+	buffer    float64
+}
+
 func main() {
 	app := cli.NewApp()
 	app.Name = "dbq"
@@ -76,13 +84,21 @@ func main() {
 					fmt.Println("Not Found a statement")
 					return
 				}
-
 				statement := c.Args()[0]
+
 				isVerbose = c.Bool("verbose")
 				isDryRun = c.Bool("dryRun")
 				onlyStatement = c.Bool("onlyStatement")
 
-				output, err := query(statement, c.Float64("hour"), c.String("start"), c.String("end"), c.Float64("hadd"), c.Float64("buffer"))
+				config := Config{
+					hour:      c.Float64("hour"),
+					startDate: c.String("start"),
+					endDate:   c.String("end"),
+					hadd:      c.Float64("hadd"),
+					buffer:    c.Float64("buffer"),
+				}
+
+				output, err := query(statement, config)
 				if err != nil {
 					fmt.Printf("Failed to run the command\n: error=%v\n", err)
 					return
@@ -96,26 +112,49 @@ func main() {
 	app.Run(os.Args)
 }
 
-func query(statement string, hour float64, start string, end string, hadd float64, buffer float64) (output string, err error) {
-	if isDryRun {
-		dApplied, _ := DateAdd(statement, hadd)
-		dStatement := GetRawStatement(dApplied)
-		fmt.Printf("Raw: %v\n", dStatement)
-		dOutput := Query(dStatement)
-		fmt.Printf("%v\n", dOutput)
+func query(statement string, config Config) (output string, err error) {
+	deco := CreateDecorator(statement, config)
+	bq := CreateBq()
+
+	if onlyStatement {
+		return printStmt(deco)
 	}
 
-	applied, _ := DateAdd(statement, hadd)
-	decorated, err := Decorate(applied, hour, start, end, hadd, buffer)
+	if isDryRun {
+		return dryRun(deco, bq)
+	}
+
+	return run(deco, bq)
+}
+
+func printStmt(deco *Decorator) (output string, err error) {
+	dStmt, err := deco.Apply()
 	if err != nil {
 		return "", err
 	}
-	if onlyStatement {
-		fmt.Print(decorated)
-		return "", nil
-	}
-	fmt.Printf("Decorated: %v\n", decorated)
 
-	output = Query(decorated)
-	return output, nil
+	return dStmt, nil
+}
+
+func dryRun(deco *Decorator, bq *Bq) (output string, err error) {
+	raw := deco.Revert()
+	fmt.Printf("Raw: %v\n%v\n", raw, bq.Query(raw))
+
+	dStmt, err := deco.Apply()
+	if err != nil {
+		return "", err
+	}
+
+	fmt.Printf("Decorated: %v\n", dStmt)
+	return bq.Query(dStmt), nil
+}
+
+func run(deco *Decorator, bq *Bq) (output string, err error) {
+	dStmt, err := deco.Apply()
+	if err != nil {
+		return "", err
+	}
+
+	fmt.Printf("Decorated: %v\n", dStmt)
+	return bq.Query(dStmt), nil
 }
