@@ -1,4 +1,4 @@
-package main
+package query
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var dateAddFuncRule = regexp.MustCompile("_ha\\((.*?)\\)")
+var dateAddFuncRule = regexp.MustCompile("_tz\\((.*?)\\)")
 
 type CustomFunc struct {
 	config Config
@@ -20,10 +20,10 @@ func CreateCustomFunc(config Config) *CustomFunc {
 }
 
 func (this *CustomFunc) Apply(statement string) string {
-	return this._ha(statement)
+	return this._tz(statement)
 }
 
-func (this *CustomFunc) _ha(statement string) string {
+func (this *CustomFunc) _tz(statement string) string {
 	if this.config.hadd == 0 {
 		return statement
 	}
@@ -34,13 +34,13 @@ func (this *CustomFunc) _ha(statement string) string {
 	for _, match := range matches {
 		if len(match) < 2 {
 			if isVerbose {
-				fmt.Printf("Skip to replace _ha(): statement=%v\n", statement)
+				fmt.Printf("Skip to replace _tz(): statement=%v\n", statement)
 			}
 			return statement
 		}
 
 		date := match[1]
-		old := fmt.Sprintf("_ha(%v)", date)
+		old := fmt.Sprintf("_tz(%v)", date)
 		new := fmt.Sprintf("DATE_ADD('%v', %v, 'HOUR')", date, this.config.hadd)
 		replaced = strings.Replace(replaced, old, new, 1)
 	}
