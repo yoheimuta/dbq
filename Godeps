@@ -1,2 +1,4 @@
 github.com/codegangsta/cli v1.2.0
 github.com/k0kubun/pp v2.1.0
+github.com/smartystreets/goconvey 627707e8db4a4e52f4e1fbbb4e10d98e79a3c946
+github.com/jacobsa/oglematchers 4fc24f97b5b74022c2a3f4ca7eed57ca29083d3e
