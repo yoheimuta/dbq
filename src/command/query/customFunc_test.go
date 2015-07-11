@@ -8,6 +8,6 @@ import (
 
 func TestCustomFunc(t *testing.T) {
 	Convey("CreateCustomFunc", t, func() {
-		So(func() { CreateCustomFunc(Config{}) }, ShouldNotPanic)
+		So(func() { CreateCustomFunc(Args{}) }, ShouldNotPanic)
 	})
 }

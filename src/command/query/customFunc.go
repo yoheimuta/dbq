@@ -8,23 +8,26 @@ import (
 
 var dateAddFuncRule = regexp.MustCompile("_tz\\((.*?)\\)")
 
+// CustomFunc handles Custom Functions that applies to the statement
 type CustomFunc struct {
-	config Config
+	args Args
 }
 
-func CreateCustomFunc(config Config) *CustomFunc {
+// CreateCustomFunc initializes the CustomFunc struct.
+func CreateCustomFunc(args Args) *CustomFunc {
 	customFunc := &CustomFunc{
-		config: config,
+		args: args,
 	}
 	return customFunc
 }
 
-func (this *CustomFunc) Apply(statement string) string {
-	return this._tz(statement)
+// Apply is a facade method that runs custom functions
+func (c *CustomFunc) Apply(statement string) string {
+	return c._tz(statement)
 }
 
-func (this *CustomFunc) _tz(statement string) string {
-	if this.config.hadd == 0 {
+func (c *CustomFunc) _tz(statement string) string {
+	if c.args.hadd == 0 {
 		return statement
 	}
 
@@ -41,7 +44,7 @@ func (this *CustomFunc) _tz(statement string) string {
 
 		date := match[1]
 		old := fmt.Sprintf("_tz(%v)", date)
-		new := fmt.Sprintf("DATE_ADD('%v', %v, 'HOUR')", date, this.config.hadd)
+		new := fmt.Sprintf("DATE_ADD('%v', %v, 'HOUR')", date, c.args.hadd)
 		replaced = strings.Replace(replaced, old, new, 1)
 	}
 	return replaced

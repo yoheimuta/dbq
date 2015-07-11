@@ -10,7 +10,8 @@ var isVerbose bool
 var isDryRun bool
 var onlyStatement bool
 
-type Config struct {
+// Args represents Arguments of the query command
+type Args struct {
 	hour      float64
 	startDate string
 	endDate   string
@@ -18,6 +19,7 @@ type Config struct {
 	buffer    float64
 }
 
+// Run is a facade method of the query command
 func Run(c *cli.Context) {
 	if len(c.Args()) != 1 {
 		fmt.Println("Not Found a statement")
@@ -29,7 +31,7 @@ func Run(c *cli.Context) {
 	isDryRun = c.Bool("dryRun")
 	onlyStatement = c.Bool("onlyStatement")
 
-	config := Config{
+	args := Args{
 		hour:      c.Float64("hour"),
 		startDate: c.String("start"),
 		endDate:   c.String("end"),
@@ -37,7 +39,7 @@ func Run(c *cli.Context) {
 		buffer:    c.Float64("buffer"),
 	}
 
-	q := createQuery(statement, config)
+	q := createQuery(statement, args)
 	output, err := q.query()
 	if err != nil {
 		fmt.Printf("Failed to run the command\n: error=%v\n", err)
@@ -48,32 +50,33 @@ func Run(c *cli.Context) {
 	}
 }
 
+// Query is an Implementation that decorates the statement and run the bq query
 type Query struct {
 	deco *Decorator
 	bq   *Bq
 }
 
-func createQuery(statement string, config Config) *Query {
+func createQuery(statement string, args Args) *Query {
 	return &Query{
-		deco: CreateDecorator(statement, config),
+		deco: CreateDecorator(statement, args),
 		bq:   CreateBq(),
 	}
 }
 
-func (this Query) query() (output string, err error) {
+func (q Query) query() (output string, err error) {
 	if onlyStatement {
-		return this.printStmt()
+		return q.printStmt()
 	}
 
 	if isDryRun {
-		return this.dryRun()
+		return q.dryRun()
 	}
 
-	return this.run()
+	return q.run()
 }
 
-func (this Query) printStmt() (output string, err error) {
-	dStmt, err := this.deco.Apply()
+func (q Query) printStmt() (output string, err error) {
+	dStmt, err := q.deco.Apply()
 	if err != nil {
 		return "", err
 	}
@@ -81,25 +84,25 @@ func (this Query) printStmt() (output string, err error) {
 	return dStmt, nil
 }
 
-func (this Query) dryRun() (output string, err error) {
-	raw := this.deco.Revert()
-	fmt.Printf("Raw: %v\n%v\n", raw, this.bq.Query(raw))
+func (q Query) dryRun() (output string, err error) {
+	raw := q.deco.Revert()
+	fmt.Printf("Raw: %v\n%v\n", raw, q.bq.Query(raw))
 
-	dStmt, err := this.deco.Apply()
+	dStmt, err := q.deco.Apply()
 	if err != nil {
 		return "", err
 	}
 
 	fmt.Printf("Decorated: %v\n", dStmt)
-	return this.bq.Query(dStmt), nil
+	return q.bq.Query(dStmt), nil
 }
 
-func (this Query) run() (output string, err error) {
-	dStmt, err := this.deco.Apply()
+func (q Query) run() (output string, err error) {
+	dStmt, err := q.deco.Apply()
 	if err != nil {
 		return "", err
 	}
 
 	fmt.Printf("Decorated: %v\n", dStmt)
-	return this.bq.Query(dStmt), nil
+	return q.bq.Query(dStmt), nil
 }
