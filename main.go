@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"command/query"
+	"github.com/yoheimuta/dbq/command/query"
 
 	"github.com/codegangsta/cli"
 )
