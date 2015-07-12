@@ -7,14 +7,9 @@ build:
     # at the right place in the workspace tree
     - setup-go-workspace
 
-    # Gets the system dependencies
-    - script:
-        name: apt-get install
-        code: |
-            sudo apt-get update -y
-            sudo apt-get install -y wget
-            sudo apt-get install -y ruby
-            sudo apt-get install -y zip
+    # Gets the packages
+    - install-packages:
+         packages: wget ruby zip
 
     # Gets the go dependencies
     - script:
@@ -55,6 +50,8 @@ build:
 # Deploy definition
 deploy:
   steps:
+
+    # GitHub Releases
     - tcnksm/ghr:
         token: $GITHUB_TOKEN
         input: dist
