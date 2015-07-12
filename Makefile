@@ -6,8 +6,8 @@ deps:
 	wget -qO- https://raw.githubusercontent.com/pote/gpm/v1.2.3/bin/gpm | GOPATH=$(GOPATH_ENV) bash
 
 check:
-	goimports -l main.go src/
-	vet main.go; vet src/
+	goimports -l main.go command/
+	vet main.go; vet command/
 	golint ./...
 
 fix:
