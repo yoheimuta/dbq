@@ -1,0 +1,62 @@
+box: tcnksm/gox
+# Build definition
+build:
+  # The steps that will be executed on build
+  steps:
+    # Sets the go workspace and places you package
+    # at the right place in the workspace tree
+    - setup-go-workspace
+
+    # Gets the system dependencies
+    - script:
+        name: apt-get install
+        code: |
+            sudo apt-get update -y
+            sudo apt-get install -y wget
+            sudo apt-get install -y ruby
+            sudo apt-get install -y zip
+
+    # Gets the go dependencies
+    - script:
+        name: go get
+        code: |
+            wget -qO- https://raw.githubusercontent.com/pote/gpm/v1.3.2/bin/gpm | bash
+
+    # Checks source code
+    - script:
+        name: go static analysis
+        code: |
+            go get golang.org/x/tools/cmd/goimports
+            go get golang.org/x/tools/cmd/vet
+            go get github.com/golang/lint/golint
+            goimports -l main.go command/ | xargs -r false
+            go vet ./...
+            golint ./... | xargs -r false
+
+    # Tests the project
+    - script:
+        name: go test
+        code: |
+            go test -v ./...
+
+    # Builds binaries
+    - tcnksm/gox
+    - tcnksm/zip:
+        input: ${WERCKER_OUTPUT_DIR}/pkg
+        output: ${WERCKER_OUTPUT_DIR}/dist
+
+  after-steps:
+
+    # Slack integration
+    - wantedly/pretty-slack-notify:
+        webhook_url: $SLACK_WEBHOOKS_URL
+        channel: tech-notification
+
+# Deploy definition
+deploy:
+  steps:
+    - tcnksm/ghr:
+        token: $GITHUB_TOKEN
+        input: dist
+        version: v0.0.2
+        replace: true
