@@ -16,5 +16,5 @@ fix:
 test:
 	GOPATH=$(GOPATH_ENV) go test $(DEBUG_FLAG) ./...
 
-install:fix
+install:
 	GOBIN=$(GOBIN_ENV) GOPATH=$(GOPATH_ENV) go install

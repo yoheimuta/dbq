@@ -28,6 +28,9 @@ func (c *CustomFunc) Apply(statement string) string {
 
 func (c *CustomFunc) _tz(statement string) string {
 	if c.args.hadd == 0 {
+		if isVerbose {
+			fmt.Printf("Skip to replace _tz(): hadd=0\n")
+		}
 		return statement
 	}
 
