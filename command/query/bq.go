@@ -13,10 +13,12 @@ func CreateBq() *Bq {
 	return bq
 }
 
+var execCommand = exec.Command
+
 // Query runs the bq query command.
 func (b *Bq) Query(statement string) string {
 	args := b.buildArgs(statement)
-	cmd := exec.Command("bq", args...)
+	cmd := execCommand("bq", args...)
 	output, _ := cmd.CombinedOutput()
 	return string(output)
 }

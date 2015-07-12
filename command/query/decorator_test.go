@@ -119,6 +119,16 @@ func TestDecorator(t *testing.T) {
 				})
 			})
 		})
+
+		Convey("When the statement includes the placeholders of decorator and customFunc", func() {
+			statement := "SELECT * FROM [account.table@] WHERE _tz(2015-07-08 17:00:00) <= time"
+			d := CreateDecorator(statement, Args{hour: 3.0, hadd: -9.0, buffer: 1})
+			actual, err := d.Apply()
+
+			expected := "SELECT * FROM [account.table@-10800000-] WHERE DATE_ADD('2015-07-08 17:00:00', -9, 'HOUR') <= time"
+			So(actual, ShouldEqual, expected)
+			So(err, ShouldBeNil)
+		})
 	})
 
 	Convey("Revert", t, func() {

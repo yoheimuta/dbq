@@ -42,7 +42,7 @@ func Run(c *cli.Context) {
 	q := createQuery(statement, args)
 	output, err := q.query()
 	if err != nil {
-		fmt.Printf("Failed to run the command\n: error=%v\n", err)
+		fmt.Printf("Failed to run the command\n:error=%v\n", err)
 		return
 	}
 	if output != "" {
@@ -56,7 +56,7 @@ type Query struct {
 	bq   *Bq
 }
 
-func createQuery(statement string, args Args) *Query {
+var createQuery = func(statement string, args Args) *Query {
 	return &Query{
 		deco: CreateDecorator(statement, args),
 		bq:   CreateBq(),
