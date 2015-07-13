@@ -18,25 +18,25 @@ func main() {
 		{
 			Name:      "query",
 			ShortName: "q",
-			Usage:     "Run bq query with complementing table decorator",
+			Usage:     "Run bq query with complementing table range decorator",
 			Flags: []cli.Flag{
 				cli.Float64Flag{
-					Name:  "hour",
-					Value: 0,
+					Name:  "beforeHour",
+					Value: 3,
 					Usage: "a decimal to specify the hour ago, relative to the current time",
 				},
 				cli.StringFlag{
-					Name:  "start",
+					Name:  "startDate",
 					Value: "",
 					Usage: "a datetime to specify date range with end flag",
 				},
 				cli.StringFlag{
-					Name:  "end",
+					Name:  "endDate",
 					Value: "",
 					Usage: "a datetime to specify date range with start flag",
 				},
 				cli.Float64Flag{
-					Name:  "hadd",
+					Name:  "tz",
 					Value: 0,
 					Usage: "a decimal of hour or -hour to add to start and end datetime, considering timezone",
 				},

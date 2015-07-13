@@ -38,11 +38,11 @@ func (d *Decorator) Apply() (decorated string, err error) {
 		}
 		decorated = d.useAbs(stmt, startMSec, endMSec)
 	} else {
-		hour := d.args.hour
-		if hour <= 0 {
-			hour = 1.0
+		beforeHour := d.args.beforeHour
+		if beforeHour <= 0 {
+			beforeHour = 3.0
 		}
-		beforeMSec := int(hour * 60 * 60 * 1000)
+		beforeMSec := int(beforeHour * 60 * 60 * 1000)
 		decorated = d.useRel(stmt, beforeMSec)
 	}
 
@@ -63,7 +63,7 @@ func (d *Decorator) Revert() (raw string) {
 }
 
 func (d *Decorator) getRangeMSec() (startMSec int64, endMSec int64, err error) {
-	hadd := d.args.hadd
+	tz := d.args.tz
 	buffer := d.args.buffer
 
 	// startTime: convert the formatted string into the unixtime ms
@@ -71,7 +71,7 @@ func (d *Decorator) getRangeMSec() (startMSec int64, endMSec int64, err error) {
 	if err != nil {
 		return 0, 0, err
 	}
-	startTime = startTime.Add(time.Duration((hadd+buffer*-1)*60) * time.Minute)
+	startTime = startTime.Add(time.Duration((tz+buffer*-1)*60) * time.Minute)
 	startMSec = startTime.Unix() * 1000
 
 	// endTime: convert the formatted string into the unixtime ms
@@ -83,7 +83,7 @@ func (d *Decorator) getRangeMSec() (startMSec int64, endMSec int64, err error) {
 	if err != nil {
 		return 0, 0, err
 	}
-	endTime = endTime.Add(time.Duration((hadd+buffer)*60) * time.Minute)
+	endTime = endTime.Add(time.Duration((tz+buffer)*60) * time.Minute)
 	endMSec = endTime.Unix() * 1000
 	return startMSec, endMSec, nil
 }

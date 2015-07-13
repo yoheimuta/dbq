@@ -31,7 +31,7 @@ func TestDecorator(t *testing.T) {
 				Convey("The argument of startDate is formatted date string", func() {
 					startDate := "2015-07-08 17:00:00"
 
-					Convey("The argument of hadd is 0, which means UTC", func() {
+					Convey("The argument of tz is 0, which means UTC", func() {
 						d := CreateDecorator(statement, Args{startDate: startDate, buffer: 1})
 						actual, err := d.Apply()
 
@@ -40,8 +40,8 @@ func TestDecorator(t *testing.T) {
 						So(err, ShouldBeNil)
 					})
 
-					Convey("The argument of hadd is -9, which means JST", func() {
-						d := CreateDecorator(statement, Args{startDate: startDate, hadd: -9, buffer: 1})
+					Convey("The argument of tz is -9, which means JST", func() {
+						d := CreateDecorator(statement, Args{startDate: startDate, tz: -9, buffer: 1})
 						actual, err := d.Apply()
 
 						expected := "SELECT * FROM [account.table@1436338800000-]"
@@ -67,7 +67,7 @@ func TestDecorator(t *testing.T) {
 					startDate := "2015-07-08 17:00:00"
 					endDate := "2015-07-08 18:00:00"
 
-					Convey("The argument of hadd is 0, which means UTC", func() {
+					Convey("The argument of tz is 0, which means UTC", func() {
 						d := CreateDecorator(statement, Args{startDate: startDate, endDate: endDate, buffer: 1})
 						actual, err := d.Apply()
 
@@ -76,8 +76,8 @@ func TestDecorator(t *testing.T) {
 						So(err, ShouldBeNil)
 					})
 
-					Convey("The argument of hadd is -9, which means JST", func() {
-						d := CreateDecorator(statement, Args{startDate: startDate, endDate: endDate, hadd: -9, buffer: 1})
+					Convey("The argument of tz is -9, which means JST", func() {
+						d := CreateDecorator(statement, Args{startDate: startDate, endDate: endDate, tz: -9, buffer: 1})
 						actual, err := d.Apply()
 
 						expected := "SELECT * FROM [account.table@1436338800000-1436349600000]"
@@ -98,10 +98,10 @@ func TestDecorator(t *testing.T) {
 				})
 			})
 
-			Convey("The argument includes the hour", func() {
+			Convey("The argument includes the beforeHour", func() {
 
-				Convey("The argument of hour is greater than 0", func() {
-					d := CreateDecorator(statement, Args{hour: 3.0, buffer: 1})
+				Convey("The argument of beforeHour is greater than 0", func() {
+					d := CreateDecorator(statement, Args{beforeHour: 3.0, buffer: 1})
 					actual, err := d.Apply()
 
 					expected := "SELECT * FROM [account.table@-10800000-]"
@@ -109,8 +109,8 @@ func TestDecorator(t *testing.T) {
 					So(err, ShouldBeNil)
 				})
 
-				Convey("The argument of hour is 0", func() {
-					d := CreateDecorator(statement, Args{hour: 1.0, buffer: 1})
+				Convey("The argument of beforeHour is 0", func() {
+					d := CreateDecorator(statement, Args{beforeHour: 1.0, buffer: 1})
 					actual, err := d.Apply()
 
 					expected := "SELECT * FROM [account.table@-3600000-]"
@@ -122,7 +122,7 @@ func TestDecorator(t *testing.T) {
 
 		Convey("When the statement includes the placeholders of decorator and customFunc", func() {
 			statement := "SELECT * FROM [account.table@] WHERE _tz(2015-07-08 17:00:00) <= time"
-			d := CreateDecorator(statement, Args{hour: 3.0, hadd: -9.0, buffer: 1})
+			d := CreateDecorator(statement, Args{beforeHour: 3.0, tz: -9.0, buffer: 1})
 			actual, err := d.Apply()
 
 			expected := "SELECT * FROM [account.table@-10800000-] WHERE DATE_ADD('2015-07-08 17:00:00', -9, 'HOUR') <= time"
@@ -133,7 +133,7 @@ func TestDecorator(t *testing.T) {
 
 	Convey("Revert", t, func() {
 		statement := "SELECT * FROM [account.table@] WHERE _tz(2015-07-08 17:00:00) <= time ORDER BY time DESC"
-		d := CreateDecorator(statement, Args{hadd: -9})
+		d := CreateDecorator(statement, Args{tz: -9})
 
 		expected := "SELECT * FROM [account.table] WHERE DATE_ADD('2015-07-08 17:00:00', -9, 'HOUR') <= time ORDER BY time DESC"
 		So(d.Revert(), ShouldEqual, expected)

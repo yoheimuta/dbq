@@ -13,7 +13,7 @@ import (
 func TestRun(t *testing.T) {
 	Convey("When the arguements are parsed", t, func() {
 		expectedStmt := "SELECT * FROM [account.table]"
-		expectedHour := 1.0
+		expectedBeforeHour := 1.0
 		expectedStart := "2015-07-08 17:00:00"
 		expectedEnd := "2015-07-08 18:00:00"
 		expectedHadd := -9.0
@@ -23,10 +23,10 @@ func TestRun(t *testing.T) {
 		createQuery = func(statement string, args Args) *Query {
 			So(statement, ShouldEqual, expectedStmt)
 
-			So(args.hour, ShouldEqual, expectedHour)
+			So(args.beforeHour, ShouldEqual, expectedBeforeHour)
 			So(args.startDate, ShouldEqual, expectedStart)
 			So(args.endDate, ShouldEqual, expectedEnd)
-			So(args.hadd, ShouldEqual, expectedHadd)
+			So(args.tz, ShouldEqual, expectedHadd)
 			So(args.buffer, ShouldEqual, expectedBuffer)
 			So(isVerbose, ShouldBeFalse)
 			So(isDryRun, ShouldBeTrue)
@@ -41,10 +41,10 @@ func TestRun(t *testing.T) {
 
 		set := flag.NewFlagSet("test", 0)
 		set.Parse([]string{expectedStmt})
-		set.Float64("hour", expectedHour, "")
-		set.String("start", expectedStart, "")
-		set.String("end", expectedEnd, "")
-		set.Float64("hadd", expectedHadd, "")
+		set.Float64("beforeHour", expectedBeforeHour, "")
+		set.String("startDate", expectedStart, "")
+		set.String("endDate", expectedEnd, "")
+		set.Float64("tz", expectedHadd, "")
 		set.Float64("buffer", expectedBuffer, "")
 		set.Bool("verbose", false, "")
 		set.Bool("dryRun", true, "")
@@ -58,9 +58,9 @@ func TestRun(t *testing.T) {
 func TestQuery(t *testing.T) {
 	statement := "SELECT * FROM [account.table@] WHERE _tz(2015-07-08 17:00:00) <= time"
 	args := Args{
-		hour:   3.0,
-		hadd:   -9.0,
-		buffer: 1.0,
+		beforeHour: 3.0,
+		tz:         -9.0,
+		buffer:     1.0,
 	}
 	q := createQuery(statement, args)
 

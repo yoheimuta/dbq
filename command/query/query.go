@@ -12,11 +12,11 @@ var onlyStatement bool
 
 // Args represents Arguments of the query command
 type Args struct {
-	hour      float64
-	startDate string
-	endDate   string
-	hadd      float64
-	buffer    float64
+	beforeHour float64
+	startDate  string
+	endDate    string
+	tz         float64
+	buffer     float64
 }
 
 // Run is a facade method of the query command
@@ -32,11 +32,11 @@ func Run(c *cli.Context) {
 	onlyStatement = c.Bool("onlyStatement")
 
 	args := Args{
-		hour:      c.Float64("hour"),
-		startDate: c.String("start"),
-		endDate:   c.String("end"),
-		hadd:      c.Float64("hadd"),
-		buffer:    c.Float64("buffer"),
+		beforeHour: c.Float64("beforeHour"),
+		startDate:  c.String("startDate"),
+		endDate:    c.String("endDate"),
+		tz:         c.Float64("tz"),
+		buffer:     c.Float64("buffer"),
 	}
 
 	q := createQuery(statement, args)

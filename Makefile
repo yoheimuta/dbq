@@ -12,7 +12,7 @@ check:
 	golint ./...
 
 fix:
-	goimports -w main.go src/
+	goimports -w main.go command/
 
 test:
 	GOPATH=$(GOPATH_ENV) go test $(DEBUG_FLAG) ./...
