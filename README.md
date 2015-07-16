@@ -72,16 +72,22 @@ $ dbq query "SELECT * FROM [foo.bar@] WHERE _tz(2015-07-08 17:00:00) <= time and
 
 The option of `dryRun` shows how much cut down full scan bytes, so I strongly recommend to use this option before running any queries.
 
-- A query with no table decorator will process 6.5 TB, then costs `6.5 * $5 = $32.5`.
-- A query with table decorator will process 4.2 GB, then costs `0.0042 * $5 = $0.021`. `dbq` will save `$32.479`.
+- A query with no table decorator will process 6.0 TiB, then costs `6.0 * $5 = $30`.
+- A query with table decorator will process 110 GiB, then costs `0.1 * $5 = $0.5`. `dbq` will save `$29.5`.
 
 ```ruby
 $ dbq query "SELECT * FROM [foo.bar@]" --dryRun
 Raw: SELECT * FROM [foo.bar]
-Query successfully validated. Assuming the tables are not modified, running this query will process 6488095769102 bytes of data.
+Query successfully validated. Assuming the tables are not modified, running this query will process 6630178173385 bytes of data.
+- 6630178173385 bytes equal to 6,630,178,173,385 bytes
+- 6630178173385 bytes equal to 6.0TiB
+- 6630178173385 bytes equal to $30.15056 (= 6.03011 TiB * $5)
 
 Decorated: SELECT * FROM [foo.bar@-10800000-]
-Query successfully validated. Assuming the tables are not modified, running this query will process 4201020576 bytes of data.
+Query successfully validated. Assuming the tables are not modified, running this query will process 117636313873 bytes of data.
+- 117636313873 bytes equal to 117,636,313,873 bytes
+- 117636313873 bytes equal to 110GiB
+- 117636313873 bytes equal to $0.53495 (= 0.10699 TiB * $5)
 ```
 
 ## Options
