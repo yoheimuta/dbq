@@ -85,16 +85,21 @@ func (q Query) printStmt() (output string, err error) {
 }
 
 func (q Query) dryRun() (output string, err error) {
+	// Displays the result without decarator
 	raw := q.deco.Revert()
-	fmt.Printf("Raw: %v\n%v\n", raw, q.bq.Query(raw))
+	res := q.bq.Query(raw)
+	info := q.bq.GetHumanReadbleInfo(res)
+	fmt.Printf("Raw: %v\n%v\n%v\n", raw, res, info)
 
+	// Displays the result with decorator
 	dStmt, err := q.deco.Apply()
 	if err != nil {
 		return "", err
 	}
-
-	fmt.Printf("Decorated: %v\n", dStmt)
-	return q.bq.Query(dStmt), nil
+	res = q.bq.Query(dStmt)
+	info = q.bq.GetHumanReadbleInfo(res)
+	fmt.Printf("Decorated: %v\n%v\n%v\n", dStmt, res, info)
+	return "", nil
 }
 
 func (q Query) run() (output string, err error) {

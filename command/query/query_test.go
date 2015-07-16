@@ -81,7 +81,7 @@ func TestQuery(t *testing.T) {
 		isDryRun = true
 		actual, err := q.query()
 
-		So(regexp.MustCompile(mockReturnVal).MatchString(actual), ShouldBeTrue)
+		So(actual, ShouldEqual, "")
 		So(err, ShouldBeNil)
 	})
 

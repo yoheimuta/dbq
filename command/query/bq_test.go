@@ -52,6 +52,19 @@ func TestBq(t *testing.T) {
 			isDryRun = false
 		})
 	})
+
+	Convey("When the result of dryRun query is changed to humanreadable one", t, func() {
+		b := NewBq()
+		result := "Query successfully validated. Assuming the tables are not modified, running this query will process 8133291239 bytes of data."
+
+		info := b.GetHumanReadbleInfo(result)
+
+		line1 := "- 8133291239 bytes equal to 8,133,291,239 bytes"
+		line2 := "- 8133291239 bytes equal to 7.6GiB"
+		line3 := "- 8133291239 bytes equal to $0.03699 (= 0.00740 TiB * $5)"
+		So(info, ShouldEqual, fmt.Sprintf("%v\n%v\n%v\n", line1, line2, line3))
+	})
+
 }
 
 // TestHelperProcess isn't a real test. It's used as a helper process
