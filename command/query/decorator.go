@@ -15,9 +15,9 @@ type Decorator struct {
 	customFunc *CustomFunc
 }
 
-// CreateDecorator initializes the Decorator struct.
-func CreateDecorator(statement string, args Args) *Decorator {
-	cf := CreateCustomFunc(args)
+// NewDecorator initializes the Decorator struct.
+func NewDecorator(statement string, args Args) *Decorator {
+	cf := NewCustomFunc(args)
 
 	decorator := &Decorator{
 		statement:  statement,

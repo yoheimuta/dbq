@@ -19,8 +19,8 @@ func TestRun(t *testing.T) {
 		expectedHadd := -9.0
 		expectedBuffer := 1.0
 
-		prevCreateQuery := createQuery
-		createQuery = func(statement string, args Args) *Query {
+		prevNewQuery := newQuery
+		newQuery = func(statement string, args Args) *Query {
 			So(statement, ShouldEqual, expectedStmt)
 
 			So(args.beforeHour, ShouldEqual, expectedBeforeHour)
@@ -33,11 +33,11 @@ func TestRun(t *testing.T) {
 			So(onlyStatement, ShouldBeTrue)
 
 			return &Query{
-				deco: CreateDecorator(statement, args),
-				bq:   CreateBq(),
+				deco: NewDecorator(statement, args),
+				bq:   NewBq(),
 			}
 		}
-		defer func() { createQuery = prevCreateQuery }()
+		defer func() { newQuery = prevNewQuery }()
 
 		set := flag.NewFlagSet("test", 0)
 		set.Parse([]string{expectedStmt})
@@ -62,7 +62,7 @@ func TestQuery(t *testing.T) {
 		tz:         -9.0,
 		buffer:     1.0,
 	}
-	q := createQuery(statement, args)
+	q := newQuery(statement, args)
 
 	Convey("When the onlyStatement flag is on", t, func() {
 		onlyStatement = true

@@ -21,20 +21,20 @@ func fakeExecCommand(command string, args ...string) *exec.Cmd {
 const mockReturnVal = "RESULT"
 
 func TestBq(t *testing.T) {
-	Convey("CreateBq", t, func() {
-		So(func() { CreateBq() }, ShouldNotPanic)
+	Convey("NewBq", t, func() {
+		So(func() { NewBq() }, ShouldNotPanic)
 	})
 
 	Convey("When the bq command executes the statement", t, func() {
 		execCommand = fakeExecCommand
 		defer func() { execCommand = exec.Command }()
 
-		actual := CreateBq().Query("SELECT * FROM [account.table]")
+		actual := NewBq().Query("SELECT * FROM [account.table]")
 		So(regexp.MustCompile(mockReturnVal).MatchString(actual), ShouldBeTrue)
 	})
 
 	Convey("When the arguments are built", t, func() {
-		b := CreateBq()
+		b := NewBq()
 		statement := "SELECT * FROM [account.table]"
 
 		Convey("When the dryRun flag is off", func() {

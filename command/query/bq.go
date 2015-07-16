@@ -7,8 +7,8 @@ import (
 // Bq is an Executor that run the bq command.
 type Bq struct{}
 
-// CreateBq initializes the Bq struct.
-func CreateBq() *Bq {
+// NewBq initializes the Bq struct.
+func NewBq() *Bq {
 	bq := &Bq{}
 	return bq
 }
