@@ -12,7 +12,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "dbq"
 	app.Usage = "CLI tool to decorate bigquery table"
-	app.Version = "0.0.2"
+	app.Version = "0.0.3"
 	app.EnableBashCompletion = true
 	app.Commands = []cli.Command{
 		{

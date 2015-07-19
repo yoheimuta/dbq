@@ -13,8 +13,8 @@ type CustomFunc struct {
 	args Args
 }
 
-// CreateCustomFunc initializes the CustomFunc struct.
-func CreateCustomFunc(args Args) *CustomFunc {
+// NewCustomFunc initializes the CustomFunc struct.
+func NewCustomFunc(args Args) *CustomFunc {
 	customFunc := &CustomFunc{
 		args: args,
 	}
