@@ -1,6 +1,18 @@
 # Change Log
 
-## [v0.0.2](https://github.com/yoheimuta/dbq/tree/v0.0.2) (2015-07-12)
+## [v0.0.3](https://github.com/yoheimuta/dbq/tree/v0.0.3) (2015-07-19)
+
+[Full Changelog](https://github.com/yoheimuta/dbq/compare/v0.0.2...v0.0.3)
+
+**Implemented enhancements:**
+
+- Output human readable result of dryRun [\#1](https://github.com/yoheimuta/dbq/issues/1)
+
+**Merged pull requests:**
+
+- Output human readable result of dryRun [\#2](https://github.com/yoheimuta/dbq/pull/2) ([yoheimuta](https://github.com/yoheimuta))
+
+## [v0.0.2](https://github.com/yoheimuta/dbq/tree/v0.0.2) (2015-07-13)
 
 [Full Changelog](https://github.com/yoheimuta/dbq/compare/v0.0.1...v0.0.2)
 
